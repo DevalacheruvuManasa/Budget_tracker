@@ -1,64 +1,64 @@
-import { ArrowUpRight, WalletCards } from 'lucide-react'
+import { useState } from 'react'
 import './App.css'
+import Navbar from './components/Navbar'
+import Sidebar from './components/Sidebar'
+import TransactionForm from './components/TransactionForm'
+import ExpenseProvider from './context/ExpenseContext'
+import useExpenses from './context/useExpenses'
+import Analytics from './pages/Analytics'
+import Dashboard from './pages/Dashboard'
+import Transactions from './pages/Transactions'
+
+const pageTitles = {
+  dashboard: 'Dashboard',
+  transactions: 'Transactions',
+  analytics: 'Analytics',
+}
+
+function ExpenseTracker() {
+  const { transactions, storageError, addTransaction, updateTransaction, deleteTransaction } = useExpenses()
+  const [activePage, setActivePage] = useState('dashboard')
+  const [formOpen, setFormOpen] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState(null)
+
+  function openAddForm() {
+    setEditingTransaction(null)
+    setFormOpen(true)
+  }
+
+  function openEditForm(transaction) {
+    setEditingTransaction(transaction)
+    setFormOpen(true)
+  }
+
+  function saveTransaction(transaction) {
+    if (editingTransaction) updateTransaction(editingTransaction.id, transaction)
+    else addTransaction(transaction)
+    setFormOpen(false)
+    setEditingTransaction(null)
+  }
+
+  function removeTransaction(id) {
+    if (window.confirm('Delete this transaction? This cannot be undone.')) deleteTransaction(id)
+  }
+
+  return (
+    <div className="app-layout">
+      <Sidebar activePage={activePage} onNavigate={setActivePage} />
+      <main className="main-area">
+        <Navbar title={pageTitles[activePage]} onAdd={openAddForm} />
+        {storageError && <p className="storage-error" role="alert">{storageError}</p>}
+        {activePage === 'dashboard' && <Dashboard transactions={transactions} onNavigate={setActivePage} onEdit={openEditForm} onDelete={removeTransaction} />}
+        {activePage === 'transactions' && <Transactions transactions={transactions} onAdd={openAddForm} onEdit={openEditForm} onDelete={removeTransaction} />}
+        {activePage === 'analytics' && <Analytics transactions={transactions} />}
+      </main>
+      {formOpen && <TransactionForm transaction={editingTransaction} onSubmit={saveTransaction} onClose={() => setFormOpen(false)} />}
+    </div>
+  )
+}
 
 function App() {
-  return (
-    <main className="app-shell">
-      <header className="topbar">
-        <a className="brand" href="/" aria-label="Pocketwise home">
-          <span className="brand-mark">
-            <WalletCards aria-hidden="true" size={21} />
-          </span>
-          <span>Pocketwise</span>
-        </a>
-        <span className="topbar-label">PERSONAL FINANCE</span>
-      </header>
-
-      <section className="welcome-panel" aria-labelledby="welcome-title">
-        <div className="welcome-copy">
-          <p className="eyebrow">YOUR MONEY, MADE CLEAR</p>
-          <h1 id="welcome-title">A little more clarity, every day.</h1>
-          <p className="welcome-description">
-            Your personal space for tracking spending, building good habits, and
-            feeling confident about what comes next.
-          </p>
-          <span className="coming-soon">
-            <span className="status-dot" />
-            Your workspace is getting ready
-          </span>
-        </div>
-        <div className="welcome-art" aria-hidden="true">
-          <div className="art-orbit orbit-one" />
-          <div className="art-orbit orbit-two" />
-          <div className="art-card">
-            <div className="art-card-top">
-              <span className="art-card-icon">
-                <WalletCards size={18} />
-              </span>
-              <ArrowUpRight size={17} />
-            </div>
-            <span className="art-card-label">YOUR FINANCES</span>
-            <span className="art-card-line" />
-            <span className="art-card-line short" />
-            <div className="art-card-bars">
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-              <i />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <footer className="page-footer">
-        <span>Small steps add up.</span>
-        <span>Made for your everyday</span>
-      </footer>
-    </main>
-  )
+  return <ExpenseProvider><ExpenseTracker /></ExpenseProvider>
 }
 
 export default App
