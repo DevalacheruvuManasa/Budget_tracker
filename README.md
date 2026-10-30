@@ -1,6 +1,7 @@
 # Pocketwise
 
-A personal expense tracker built with React, Vite, and JavaScript.
+A responsive personal expense tracker built with React, Vite, and JavaScript.
+Transactions are stored in your browser using LocalStorage.
 
 ## Requirements
 
@@ -16,6 +17,14 @@ npm run dev
 
 Vite prints the local development URL after startup.
 
+## Features
+
+- Add, edit, and delete income and expense transactions.
+- Search transactions and filter by type, category, and date range.
+- View balance, income, expenses, and monthly savings at a glance.
+- Explore spending categories, monthly income and expenses, and savings trends.
+- Keep transaction data between browser sessions with LocalStorage.
+
 ## Available scripts
 
 - `npm run dev` — start the development server
@@ -25,6 +34,5 @@ Vite prints the local development URL after startup.
 - `npm run cypress:open` — open the Cypress runner
 - `npm run cypress:run` — run Cypress tests headlessly
 
-The application is being implemented in reviewable feature stages. Transaction
-management, persistence, dashboards, and analytics will be added in subsequent
-features.
+For Cypress end-to-end tests, start the dev server in one terminal and run
+`npm run cypress:run` in another.
